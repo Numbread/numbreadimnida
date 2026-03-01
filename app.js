@@ -697,8 +697,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 tags.push(`<span class="tag h-tag ${diffClass}">${item.difficulty.charAt(0).toUpperCase() + item.difficulty.slice(1)}</span>`);
             }
             
+            // Use timestamp as unique identifier
+            const itemId = item.timestamp || Date.now();
+            
             return `
-                <div class="history-item" data-korean="${item.korean}" data-pronunciation="${pronunciation}" data-index="${index}">
+                <div class="history-item" data-korean="${item.korean}" data-pronunciation="${pronunciation}" data-timestamp="${itemId}">
+                    <button class="history-delete-btn" data-timestamp="${itemId}" title="Delete this item">
+                        <i class="fas fa-times"></i>
+                    </button>
                     <div class="h-content">
                         <span class="h-korean">${item.korean}</span>
                         <span class="h-english">${item.english}</span>
@@ -714,8 +720,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add click event listeners to history items
         document.querySelectorAll('.history-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                // Don't trigger if clicking on tags
-                if (e.target.closest('.h-tags')) return;
+                // Don't trigger if clicking on delete button or tags
+                if (e.target.closest('.history-delete-btn') || e.target.closest('.h-tags')) return;
                 
                 const korean = item.dataset.korean;
                 const pronunciation = item.dataset.pronunciation;
@@ -732,6 +738,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+        
+        // Add delete button event listeners
+        document.querySelectorAll('.history-delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent triggering the item click
+                
+                const timestamp = btn.dataset.timestamp;
+                if (timestamp) {
+                    deleteHistoryItem(parseInt(timestamp));
+                }
+            });
+        });
+    }
+    
+    // Delete a specific history item
+    function deleteHistoryItem(timestamp) {
+        const index = history.findIndex(item => item.timestamp === timestamp);
+        if (index !== -1) {
+            history.splice(index, 1);
+            saveHistory();
+            updateHistoryCategoryFilter();
+            renderHistory();
+        }
     }
 
     clearHistoryBtn.addEventListener('click', () => {

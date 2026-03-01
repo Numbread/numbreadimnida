@@ -575,6 +575,54 @@ textarea[readonly] {
     margin-top: 0.5rem;
 }
 
+.history-delete-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.7rem;
+    opacity: 0;
+    z-index: 10;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.history-item:hover .history-delete-btn {
+    opacity: 1;
+}
+
+/* Always show delete button on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .history-delete-btn {
+        opacity: 0.7;
+    }
+    
+    .history-item:active .history-delete-btn,
+    .history-delete-btn:active {
+        opacity: 1;
+    }
+}
+
+.history-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    transform: scale(1.1);
+}
+
+.history-delete-btn:active {
+    transform: scale(0.95);
+}
+
 .history-list {
     display: flex;
     flex-wrap: nowrap;
@@ -616,6 +664,7 @@ textarea[readonly] {
     animation: fadeIn 0.4s ease-out;
     box-shadow: 0 2px 4px -1px rgba(14, 165, 233, 0.1);
     cursor: pointer;
+    position: relative;
 }
 
 .history-item:hover {
