@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numbread-Imnida | Premium Korean Noun & Verb Translator</title>
+    <meta name="description"
+        content="A professional-grade Korean-English translator specializing in nouns and verbs with a modern aesthetic.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-language"></i>
+            <span>Numbread<strong>-Imnida</strong></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-mode="translator">Translator</a>
+            <a href="#" class="nav-link" data-mode="flashcard">Flashcards</a>
+            <a href="#" class="nav-link" data-mode="quiz">Quiz</a>
+            <a href="#" class="nav-link" data-mode="typing">Typing</a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </nav>
+
+    <main class="container">
+        <header class="hero">
+            <h1>Korean <span class="gradient-text">Noun & Verb</span> Translator</h1>
+            <p>Translate Korean words and phrases with high precision and elegant clarity.</p>
+        </header>
+
+        <section class="translator-card">
+            <div class="translator-grid">
+                <div class="input-area glass">
+                    <div class="area-header">
+                        <span>Source (Auto-Generated)</span>
+                        <div class="gen-toggles">
+                            <button class="gen-btn active" data-type="nouns">Nouns</button>
+                            <button class="gen-btn" data-type="verbs">Verbs</button>
+                        </div>
+                    </div>
+                    <div class="filter-controls" id="filter-controls">
+                        <select id="category-filter" class="filter-select">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <select id="difficulty-filter" class="filter-select">
+                            <option value="all">All Levels</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <textarea id="source-text" placeholder="Click 'Shuffle' to begin..." readonly></textarea>
+                    <div id="pronunciation-area" class="pronunciation-text"></div>
+                    <div class="area-footer">
+                        <button id="shuffle-btn" class="secondary-btn" title="Get Random Word">
+                            <i class="fas fa-random"></i>
+                            <span>Shuffle</span>
+                        </button>
+                        <button id="translate-btn" class="primary-btn">
+                            <span>Translate</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button id="korean-listen-btn" title="Listen to Korean" style="display: none;">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button id="pronunciation-listen-btn" title="Listen to Pronunciation" style="display: none;">
+                            <i class="fas fa-volume-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="output-area glass">
+                    <div class="area-header">
+                        <span>Translation</span>
+                        <div class="tags" id="word-tags">
+                            <!-- Tags like 'Noun' or 'Verb' will appear here -->
+                        </div>
+                    </div>
+                    <div id="target-text" class="result-placeholder">Translation will appear here...</div>
+                    <div class="area-footer">
+                        <button id="copy-btn" title="Copy to Clipboard">
+                            <i class="far fa-copy"></i>
+                        </button>
+                        <button id="listen-btn" title="Listen">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="history-section">
+                <div class="history-header">
+                    <div>
+                        <span><i class="fas fa-history"></i> Recent Discoveries</span>
+                        <span class="device-indicator" id="device-indicator" title="Device ID"></span>
+                    </div>
+                    <div class="history-actions">
+                        <button id="export-history" class="export-btn" title="Export History">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button id="clear-history">Clear History</button>
+                    </div>
+                </div>
+                <div class="history-filters">
+                    <div class="history-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="history-search-input" placeholder="Search history..." autocomplete="off">
+                    </div>
+                    <select id="history-type-filter" class="history-filter-select">
+                        <option value="all">All Types</option>
+                        <option value="nouns">Nouns</option>
+                        <option value="verbs">Verbs</option>
+                    </select>
+                    <select id="history-category-filter" class="history-filter-select">
+                        <option value="all">All Categories</option>
+                    </select>
+                    <select id="history-difficulty-filter" class="history-filter-select">
+                        <option value="all">All Levels</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div id="history-list" class="history-list">
+                    <div class="history-placeholder">Your shuffle history will appear here...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flashcard Mode -->
+        <section id="flashcard-mode" class="mode-section" style="display: none;">
+            <div class="flashcard-container glass">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-front">
+                        <div class="flashcard-word" id="flashcard-word"></div>
+                        <div class="flashcard-hint">Click to flip</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="flashcard-translation" id="flashcard-translation"></div>
+                        <div class="flashcard-pronunciation" id="flashcard-pronunciation"></div>
+                        <div class="flashcard-tags" id="flashcard-tags"></div>
+                    </div>
+                </div>
+                <div class="flashcard-controls">
+                    <button id="prev-card" class="secondary-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+                    <button id="next-card" class="secondary-btn">Next <i class="fas fa-chevron-right"></i></button>
+                    <button id="shuffle-cards" class="primary-btn"><i class="fas fa-random"></i> Shuffle</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Mode -->
+        <section id="quiz-mode" class="mode-section" style="display: none;">
+            <div class="quiz-container glass">
+                <div class="quiz-header">
+                    <div class="quiz-score">Score: <span id="quiz-score">0</span>/<span id="quiz-total">0</span></div>
+                    <button id="start-quiz" class="primary-btn">Start Quiz</button>
+                </div>
+                <div id="quiz-content" class="quiz-content" style="display: none;">
+                    <div class="quiz-question" id="quiz-question"></div>
+                    <div class="quiz-options" id="quiz-options"></div>
+                    <div class="quiz-feedback" id="quiz-feedback"></div>
+                    <button id="next-question" class="primary-btn" style="display: none;">Next Question</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typing Practice Mode -->
+        <section id="typing-mode" class="mode-section" style="display: none;">
+            <div class="typing-container glass">
+                <div class="typing-header">
+                    <div class="typing-stats">
+                        <span>Correct: <span id="typing-correct">0</span></span>
+                        <span>Wrong: <span id="typing-wrong">0</span></span>
+                    </div>
+                    <button id="start-typing" class="primary-btn">Start Practice</button>
+                </div>
+                <div id="typing-content" class="typing-content" style="display: none;">
+                    <div class="typing-prompt">
+                        <p>Type the Korean word for:</p>
+                        <div class="typing-english" id="typing-english"></div>
+                    </div>
+                    <input type="text" id="typing-input" class="typing-input" placeholder="Type here..." autocomplete="off">
+                    <div class="typing-feedback" id="typing-feedback"></div>
+                    <button id="typing-next" class="primary-btn" style="display: none;">Next Word</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-tips">
+            <div class="tip-card glass">
+                <i class="fas fa-bookmark"></i>
+                <h3>Nouns (명사)</h3>
+                <p>Korean nouns don't change based on number or gender, making them versatile to translate.</p>
+            </div>
+            <div class="tip-card glass">
+                <i class="fas fa-bolt"></i>
+                <h3>Verbs (동사)</h3>
+                <p>Korean verbs are always at the end of the sentence and are conjugated based on politeness.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Numbread-Imnida. Crafted with <i class="fas fa-heart"></i></p>
+    </footer>
+
+    <script src="app.js?v=0227"></script>
+</body>
+
+</html>
