@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize speech synthesis for mobile (load voices early)
+    if ('speechSynthesis' in window) {
+        // Trigger voice loading on mobile devices
+        window.speechSynthesis.getVoices();
+        // Some mobile browsers need this to be called after a short delay
+        setTimeout(() => {
+            window.speechSynthesis.getVoices();
+        }, 100);
+    }
+    
     // DOM Elements
     const sourceText = document.getElementById('source-text');
     const targetText = document.getElementById('target-text');
@@ -384,6 +394,79 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Enhanced TTS function for mobile compatibility
+    function speakKorean(text) {
+        if (!text) return;
+        
+        // Check if speech synthesis is available
+        if (!('speechSynthesis' in window)) {
+            alert('Speech synthesis is not supported in your browser.');
+            return;
+        }
+        
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        
+        // Small delay to ensure cancellation is processed (especially on mobile)
+        setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Try multiple language codes for better mobile compatibility
+            const languages = ['ko-KR', 'ko', 'ko-KR-x-korej'];
+            utterance.lang = languages[0];
+            
+            // Set voice properties for better mobile support
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            // Function to speak with voice selection
+            const speakWithVoice = () => {
+                const voices = window.speechSynthesis.getVoices();
+                const koreanVoice = voices.find(voice => 
+                    voice.lang.startsWith('ko') || 
+                    voice.name.toLowerCase().includes('korean') ||
+                    voice.name.toLowerCase().includes('korea')
+                );
+                
+                if (koreanVoice) {
+                    utterance.voice = koreanVoice;
+                }
+                
+                // Error handling
+                utterance.onerror = (event) => {
+                    console.error('Speech synthesis error:', event);
+                    // Fallback: try with default language
+                    if (event.error === 'language-not-supported') {
+                        const fallbackUtterance = new SpeechSynthesisUtterance(text);
+                        fallbackUtterance.lang = 'en-US';
+                        fallbackUtterance.rate = 0.8;
+                        window.speechSynthesis.speak(fallbackUtterance);
+                        alert('Korean TTS not available. Playing with default voice.');
+                    } else {
+                        alert('Unable to play pronunciation. Please try again.');
+                    }
+                };
+                
+                utterance.onend = () => {
+                    // Speech ended successfully
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            };
+            
+            // Load voices if not already loaded (important for mobile)
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    speakWithVoice();
+                };
+            } else {
+                speakWithVoice();
+            }
+        }, 100);
+    }
+
     // Initial shuffle of pools
     shuffleArray(pools.nouns);
     shuffleArray(pools.verbs);
@@ -638,10 +721,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pronunciation = item.dataset.pronunciation;
                 
                 if (korean && pronunciation) {
-                    // Play Korean pronunciation
-                    const utterance = new SpeechSynthesisUtterance(korean);
-                    utterance.lang = 'ko-KR';
-                    window.speechSynthesis.speak(utterance);
+                    // Play Korean pronunciation using enhanced function
+                    speakKorean(korean);
                     
                     // Add visual feedback
                     item.classList.add('playing');
@@ -796,9 +877,24 @@ document.addEventListener('DOMContentLoaded', () => {
     listenBtn.addEventListener('click', () => {
         const text = targetText.textContent;
         if (text && text !== 'Translation will appear here...') {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = targetLang === 'ko' ? 'ko-KR' : 'en-US';
-            window.speechSynthesis.speak(utterance);
+            if (targetLang === 'ko') {
+                // Use enhanced Korean TTS function
+                speakKorean(text);
+            } else {
+                // English TTS
+                if (!('speechSynthesis' in window)) {
+                    alert('Speech synthesis is not supported in your browser.');
+                    return;
+                }
+                window.speechSynthesis.cancel();
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 1.0;
+                    utterance.volume = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                }, 100);
+            }
         }
     });
 
@@ -829,9 +925,7 @@ document.addEventListener('DOMContentLoaded', () => {
     koreanListenBtn.addEventListener('click', () => {
         const koreanWord = sourceText.value;
         if (koreanWord) {
-            const utterance = new SpeechSynthesisUtterance(koreanWord);
-            utterance.lang = 'ko-KR';
-            window.speechSynthesis.speak(utterance);
+            speakKorean(koreanWord);
         }
     });
 
